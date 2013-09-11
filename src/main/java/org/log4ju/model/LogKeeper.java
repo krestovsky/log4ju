@@ -6,18 +6,20 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LogHolder {
+public class LogKeeper {
+	
+	public static final String SEPARATOR = ":";
 
 	private ByteArrayOutputStream baos;
 	private String separator;
 	
-	protected LogHolder() {
+	protected LogKeeper() {
 		this(new ByteArrayOutputStream());
 	}
 	
-	public LogHolder(ByteArrayOutputStream baos) {
+	public LogKeeper(ByteArrayOutputStream baos) {
 		this.baos = baos;
-		this.separator = ":";
+		this.separator = SEPARATOR;
 	}
 	
 	public void setSeparator(String separator) {

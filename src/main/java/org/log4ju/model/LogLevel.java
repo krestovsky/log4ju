@@ -1,6 +1,6 @@
 package org.log4ju.model;
 
-public enum LogScope {
+public enum LogLevel {
 
 	TRACE, DEBUG, INFO, WARN, ERROR
 	

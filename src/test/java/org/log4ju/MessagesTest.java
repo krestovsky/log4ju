@@ -5,7 +5,7 @@ import org.junit.runner.RunWith;
 import org.log4ju.annotation.Message;
 import org.log4ju.annotation.Messages;
 import org.log4ju.junit4.Log4JuJUnit4ClassRunner;
-import org.log4ju.model.LogScope;
+import org.log4ju.model.LogLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,21 +24,45 @@ public class MessagesTest {
 			logger.debug(MESSAGE);
 			logger.trace(MESSAGE);
 		}
+		
+		public void debugMessage(String message, Object... params) {
+			logger.debug(message, params);
+		}
 	}
 	
 	@Test
 	@Messages(
-		//ordered = true,
 		messages = {
-			@Message( message = TestClass.MESSAGE, scope = LogScope.ERROR),
-			@Message( message = TestClass.MESSAGE, scope = LogScope.WARN),
-			@Message( message = TestClass.MESSAGE, scope = LogScope.INFO),
-			@Message( message = TestClass.MESSAGE, scope = LogScope.DEBUG),
-			@Message( message = TestClass.MESSAGE, scope = LogScope.TRACE)
+			@Message( message = TestClass.MESSAGE, level = LogLevel.ERROR),
+			@Message( message = TestClass.MESSAGE, level = LogLevel.WARN),
+			@Message( message = TestClass.MESSAGE),
+			@Message( message = TestClass.MESSAGE, level = LogLevel.DEBUG),
+			@Message( message = TestClass.MESSAGE, level = LogLevel.TRACE)
 		}
 	)
 	public void test_messages_in_order() {
 		new TestClass().doMessages();
+	}
+	
+	@Test
+	@Messages(
+		ordered = false,
+		messages = {
+			@Message( message = TestClass.MESSAGE, level = LogLevel.WARN),
+			@Message( message = TestClass.MESSAGE),
+			@Message( message = TestClass.MESSAGE, level = LogLevel.DEBUG),
+			@Message( message = TestClass.MESSAGE, level = LogLevel.ERROR),
+			@Message( message = TestClass.MESSAGE, level = LogLevel.TRACE)
+		}
+	)
+	public void test_messages_without_order() {
+		new TestClass().doMessages();
+	}
+	
+	@Test
+	@Message( message = "Debug {} with {}", level = LogLevel.DEBUG, params = {"message", "params"} )
+	public void test_message_params() {
+		new TestClass().debugMessage("Debug {} with {}", "message", "params");
 	}
 
 }

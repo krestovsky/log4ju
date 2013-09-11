@@ -1,14 +1,16 @@
 package org.log4ju;
+
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 import java.util.List;
 
-import org.log4ju.model.LogHolder;
+import org.log4ju.model.LogKeeper;
 import org.log4ju.model.LogMessage;
-import org.log4ju.model.LogScope;
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Level;
@@ -26,11 +28,12 @@ import ch.qos.logback.core.OutputStreamAppender;
  * 1. in test method <br/>
  * <pre>
  *
+ * &#64;Test
  * public void test_some_object_in_common_cases() {
+ *     LogTester = new LogTester().initializeFor(so.getClass());
  *     SomeObject so = new SomeObject();
- *     LogHolder holder = initializeLogger(so.getClass());
  *     so.doSomeOperation();
- *     testLogMessagesInOrder(holder, debugMessage("some debug message"));
+ *     tester.perfromTest(true, LogMessage.debugMessage("some debug message"));
  * }
  * </pre>
  * 
@@ -39,33 +42,38 @@ import ch.qos.logback.core.OutputStreamAppender;
  * 
  * <pre>
  * 
- * private LogHolder holer;
+ * private LogTester tester;
  * 
+ * &#64;Before
  * public void setUp() {
- *     holder = initializeLogger(SomeObject.class);
+ *     tester = new LogTester().initializeFor(SomeObject.class);
  * }
  * 
+ * &#64;Test
  * public void test_first_case() {
  *     SomeObject so = new SomeObject();
  *     so.doSome();
- *     testLogMessagesInOrder(holder, infoMessage("some info message"));
+ *     tester.performTest(true, LogMessage.infoMessage("some info message"));
  * }
  * 
+ * &#64;Test
  * public void test_second_case() {
  *     SomeObject so = new SomeObject();
  *     so.doAnother();
- *     testLogMessagesInOrder(holder, errorMessage("some error message"));
+ *     tester.performTest(true, LogMessage.errorMessage("some error message"));
  * }
  * </pre>
  * 
- * @author krestovskiy.mg
+ * @author Maxim Krestovsky
  *
  */
-public class LogsTestingHelper {
+public class LogTester {
 
-	public static LogHolder initializeLogger(Class<?> klazzFor) {
+	private LogKeeper keeper;
+	private boolean initialized;
+	
+	public LogTester initializeFor(Class<?> klazzFor) {
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		LogHolder holder = new LogHolder(out);
 		
 		Logger logger = (Logger)LoggerFactory.getLogger(klazzFor);
 		LoggerContext ctx = logger.getLoggerContext();
@@ -84,23 +92,31 @@ public class LogsTestingHelper {
 		
 		logger.setLevel(Level.TRACE);
 		logger.addAppender(appender);
-        
-		return holder;
+		
+		keeper = new LogKeeper(out);
+		initialized = true;
+		
+		return this;
 	}
 	
-	public static void testLogMessagesInOrder(LogHolder holder, LogMessage ... logMsgs) {
-		assertNotNull("Log messages is null", holder);
+	public void performTest(boolean ordered, LogMessage ... logMsgs) {
+		if (!initialized) fail("Tester is not initialized");
 		assertNotNull("Do you really want to test null with log messages?", logMsgs);
 		
-		List<String[]> messages = holder.getMessages();
+		List<String[]> messages = keeper.getMessages();
 		assertEquals("Not equal expected and actual messages", logMsgs.length, messages.size());
 		
-		for (int i=0; i<logMsgs.length; i++) {
-			LogMessage tested = logMsgs[i];
-			String[] mess = messages.get(i);
-			
-			assertSame(tested.getScope(), LogScope.valueOf(mess[0]));
-			assertEquals(tested.getMessage(), mess[1]);
+		performTest(ordered, messages, logMsgs);
+	}
+	
+	private void performTest(boolean ordered, List<String[]> messages, LogMessage ... logMsgs) {
+		LogMessage[] logged = LogMessage.toMessages(messages);
+		
+		if (!ordered) {
+			Arrays.sort(logged);
+			Arrays.sort(logMsgs);
 		}
+		
+		assertArrayEquals(logMsgs, logged);
 	}
 }

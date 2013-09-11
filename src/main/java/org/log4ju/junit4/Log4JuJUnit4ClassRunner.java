@@ -22,9 +22,18 @@ public class Log4JuJUnit4ClassRunner extends BlockJUnit4ClassRunner {
 	
 	protected Statement withMessages(FrameworkMethod frameworkMethod, Statement next) {
 		Messages messagesAnnotation = frameworkMethod.getAnnotation(Messages.class);
-		//boolean ordered = (messagesAnnotation != null ? messagesAnnotation.ordered(): true);
-		Message[] messages = (messagesAnnotation != null? messagesAnnotation.messages(): new Message[] {});
-		return new MessagesStatement(next, frameworkMethod.getMethod(), true, messages);
+		if (messagesAnnotation != null) {
+			boolean ordered = messagesAnnotation.ordered();
+			Message[] messages = messagesAnnotation.messages();
+			return new MessagesStatement(next, frameworkMethod.getMethod(), ordered, messages);
+		}
+		
+		Message messageAnnotation = frameworkMethod.getAnnotation(Message.class);
+		if (messageAnnotation != null)  {
+			return new MessagesStatement(next, frameworkMethod.getMethod(), true, messageAnnotation);
+		}
+		
+		return next;
 	}
 	
 }
