@@ -15,11 +15,13 @@
  */
 package org.log4ju.junit4;
 
+import static org.log4ju.junit4.Message.fromAnnotation;
+
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
-import org.log4ju.annotation.Message;
+import org.log4ju.annotation.Default;
 import org.log4ju.annotation.Messages;
 
 /**
@@ -58,13 +60,19 @@ public class Log4JuJUnit4ClassRunner extends BlockJUnit4ClassRunner {
 		Messages messagesAnnotation = frameworkMethod.getAnnotation(Messages.class);
 		if (messagesAnnotation != null) {
 			boolean ordered = messagesAnnotation.ordered();
-			Message[] messages = messagesAnnotation.messages();
+			Message[] messages = Message.fromAnnotations(messagesAnnotation.messages());
+			if (messagesAnnotation.klazz() != Default.class) {
+				for (Message m: messages) {
+					if (m.getKlazz() != Default.class) continue;
+					m.setKlazz(messagesAnnotation.klazz());
+				}
+			}
 			return new MessagesStatement(next, frameworkMethod.getMethod(), ordered, messages);
 		}
 		
-		Message messageAnnotation = frameworkMethod.getAnnotation(Message.class);
+		org.log4ju.annotation.Message messageAnnotation = frameworkMethod.getAnnotation(org.log4ju.annotation.Message.class);
 		if (messageAnnotation != null)  {
-			return new MessagesStatement(next, frameworkMethod.getMethod(), true, messageAnnotation);
+			return new MessagesStatement(next, frameworkMethod.getMethod(), true, fromAnnotation(messageAnnotation));
 		}
 		
 		return next;

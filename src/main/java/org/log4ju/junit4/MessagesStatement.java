@@ -15,13 +15,16 @@
  */
 package org.log4ju.junit4;
 
+import static org.log4ju.model.LogMessage.message;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.runners.model.Statement;
 import org.log4ju.LogTester;
-import org.log4ju.annotation.Message;
 import org.log4ju.model.LogMessage;
 
 /**
@@ -50,17 +53,31 @@ public class MessagesStatement extends Statement {
 	
 	@Override
 	public void evaluate() throws Throwable {
-		LogTester tester = new LogTester();
-		tester.initializeFor(testMethod.getDeclaringClass());
+		Map<Class<?>, LogTester> testers = new HashMap<Class<?>, LogTester>();
+		Map<Class<?>, List<LogMessage>> klazzMessages = new HashMap<Class<?>, List<LogMessage>>();
+		for (Message m: messages) {
+			Class<?> klazz = (m.getKlazz() == null) ? testMethod.getDeclaringClass() : m.getKlazz();
+			if (!testers.containsKey(klazz)) {
+				testers.put(klazz, new LogTester().initializeFor(klazz));
+			}
+			
+			List<LogMessage> localMessages = klazzMessages.get(klazz);
+			if (localMessages == null) {
+				localMessages = new ArrayList<LogMessage>();
+				klazzMessages.put(klazz, localMessages);
+			}
+			localMessages.add(message(m.getLevel(), m.getMessage(), m.getParams()));
+		}
 		
 		next.evaluate();
 		
-		List<LogMessage> logMessages = new ArrayList<LogMessage>(messages.length);
-		for (Message m: messages) {
-			logMessages.add(LogMessage.message(m.level(), m.message(), m.params()));
+		for (Class<?> klazz: testers.keySet()) {
+			List<LogMessage> localMessages = klazzMessages.get(klazz);
+			if (localMessages.isEmpty()) continue;
+			
+			LogTester tester = testers.get(klazz);
+			tester.performTest(ordered, localMessages.toArray(new LogMessage[] {}));
 		}
-		
-		tester.performTest(ordered, logMessages.toArray(new LogMessage[logMessages.size()]));
 	}
 
 }

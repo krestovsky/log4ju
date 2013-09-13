@@ -47,4 +47,6 @@ public @interface Messages {
 	
 	Message[] messages();
 	
+	Class<?> klazz() default Default.class;
+	
 }

@@ -6,38 +6,18 @@ import org.log4ju.annotation.Message;
 import org.log4ju.annotation.Messages;
 import org.log4ju.junit4.Log4JuJUnit4ClassRunner;
 import org.log4ju.model.LogLevel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RunWith(Log4JuJUnit4ClassRunner.class)
 public class MessagesTest {
 	
-	private class TestClass {
-		public static final String MESSAGE = "message";
-		
-		private final Logger logger = LoggerFactory.getLogger(getClass());
-		
-		public void doMessages() {
-			logger.error(MESSAGE);
-			logger.warn(MESSAGE);
-			logger.info(MESSAGE);
-			logger.debug(MESSAGE);
-			logger.trace(MESSAGE);
-		}
-		
-		public void debugMessage(String message, Object... params) {
-			logger.debug(message, params);
-		}
-	}
-	
 	@Test
 	@Messages(
 		messages = {
-			@Message( message = TestClass.MESSAGE, level = LogLevel.ERROR),
-			@Message( message = TestClass.MESSAGE, level = LogLevel.WARN),
-			@Message( message = TestClass.MESSAGE),
-			@Message( message = TestClass.MESSAGE, level = LogLevel.DEBUG),
-			@Message( message = TestClass.MESSAGE, level = LogLevel.TRACE)
+			@Message( message = TestClass.MESSAGE, level = LogLevel.ERROR, klazz = TestClass.class),
+			@Message( message = TestClass.MESSAGE, level = LogLevel.WARN, klazz = TestClass.class),
+			@Message( message = TestClass.MESSAGE, klazz = TestClass.class),
+			@Message( message = TestClass.MESSAGE, level = LogLevel.DEBUG, klazz = TestClass.class),
+			@Message( message = TestClass.MESSAGE, level = LogLevel.TRACE, klazz = TestClass.class)
 		}
 	)
 	public void test_messages_in_order() {
@@ -47,6 +27,7 @@ public class MessagesTest {
 	@Test
 	@Messages(
 		ordered = false,
+		klazz = TestClass.class,
 		messages = {
 			@Message( message = TestClass.MESSAGE, level = LogLevel.WARN),
 			@Message( message = TestClass.MESSAGE),
@@ -60,9 +41,21 @@ public class MessagesTest {
 	}
 	
 	@Test
-	@Message( message = "Debug {} with {}", level = LogLevel.DEBUG, params = {"message", "params"} )
+	@Message(message = "Debug {} with {}", level = LogLevel.DEBUG, params = {"message", "params"}, klazz = TestClass.class)
 	public void test_message_params() {
 		new TestClass().debugMessage("Debug {} with {}", "message", "params");
+	}
+	
+	@Test
+	@Messages(
+		klazz = TestClass.class,
+		messages = {
+			@Message(message = "first object message", klazz = TestWrapper.class),
+			@Message(message = "second object message")
+		}
+	)
+	public void test_nested_logged_objects() {
+		new TestWrapper().doMessages();
 	}
 
 }
