@@ -92,7 +92,6 @@ public class LogTester {
 		
 		Logger logger = (Logger)LoggerFactory.getLogger(klazzFor);
 		LoggerContext ctx = logger.getLoggerContext();
-		ctx.reset();
 		
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
 		encoder.setContext(ctx);
