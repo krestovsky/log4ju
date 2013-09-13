@@ -57,5 +57,11 @@ public class MessagesTest {
 	public void test_nested_logged_objects() {
 		new TestWrapper().doMessages();
 	}
-
+	
+	@Test
+	@Message(message = "Debug {} with {}", level = LogLevel.DEBUG, params = {"message", "params"}, klazz = TestClass.class, times = 2)
+	public void test_message_repeat() {
+		new TestClass().debugMessage("Debug {} with {}", "message", "params");
+		new TestClass().debugMessage("Debug {} with {}", "message", "params");
+	}
 }

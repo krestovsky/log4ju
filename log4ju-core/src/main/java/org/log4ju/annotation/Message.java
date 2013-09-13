@@ -47,4 +47,6 @@ public @interface Message {
 	String[] params() default {};
 	
 	Class<?> klazz() default Default.class;
+	
+	int times() default 1;
 }

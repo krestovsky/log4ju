@@ -66,7 +66,9 @@ public class MessagesStatement extends Statement {
 				localMessages = new ArrayList<LogMessage>();
 				klazzMessages.put(klazz, localMessages);
 			}
-			localMessages.add(message(m.getLevel(), m.getMessage(), m.getParams()));
+			for (int i=0; i< m.getTimes(); i++) {
+				localMessages.add(message(m.getLevel(), m.getMessage(), m.getParams()));
+			}
 		}
 		
 		next.evaluate();

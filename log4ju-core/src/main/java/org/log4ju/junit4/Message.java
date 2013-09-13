@@ -26,6 +26,8 @@ public class Message {
 	private String[] params;
 	
 	private Class<?> klazz;
+	
+	private int times;
 
 	public String getMessage() {
 		return message;
@@ -59,6 +61,14 @@ public class Message {
 		this.klazz = klazz;
 	}
 	
+	public int getTimes() {
+		return times;
+	}
+	
+	public void setTimes(int times) {
+		this.times = times;
+	}
+	
 	public static Message[] fromAnnotations(org.log4ju.annotation.Message[] messages) {
 		Message[] result = new Message[messages.length];
 		for (int i=0; i<messages.length; i++) {
@@ -73,6 +83,7 @@ public class Message {
 		result.setLevel(message.level());
 		result.setMessage(message.message());
 		result.setParams(message.params());
+		result.setTimes(message.times());
 		return result;
 	}
 	
