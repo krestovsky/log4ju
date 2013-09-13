@@ -5,7 +5,6 @@ import org.junit.runner.RunWith;
 import org.log4ju.annotation.Message;
 import org.log4ju.annotation.Messages;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Repeat;
 import org.springframework.test.context.ContextConfiguration;
 
 import config.TestConfig;
@@ -18,11 +17,9 @@ public class RunnerTest {
 	private MessageProducer mp;
 	
 	@Test
-	@Repeat(2)
 	@Messages(
 		klazz = MessageProducer.class,
 		messages = {
-			@Message(message = "produced message with {}", params = {"param"}),
 			@Message(message = "produced message with {}", params = {"param"})
 		}
 	)
