@@ -10,6 +10,10 @@
 
 	<name>Log Testing Parent Module</name>
 	
+	<scm>
+		<connection>scm:svn:https://github.com/krestovsky/log4ju/trunk</connection>
+	</scm>
+	
 	<modules>
 		<module>log4ju-core</module>
 		<module>log4ju-spring</module>
