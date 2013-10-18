@@ -5,20 +5,20 @@
 	<groupId>org.log4ju</groupId>
 	<artifactId>log4ju</artifactId>
 	<version>1.0-SNAPSHOT</version>
-	
+
 	<packaging>pom</packaging>
 
 	<name>Log Testing Parent Module</name>
-	
+
 	<scm>
 		<connection>scm:svn:https://github.com/krestovsky/log4ju/trunk</connection>
 	</scm>
-	
+
 	<modules>
 		<module>log4ju-core</module>
 		<module>log4ju-spring</module>
 	</modules>
-	
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -55,6 +55,12 @@
 					<configuration>
 						<preparationGoals>clean install</preparationGoals>
 					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.16</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
