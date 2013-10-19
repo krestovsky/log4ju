@@ -13,6 +13,17 @@
 	<scm>
 		<connection>scm:svn:https://github.com/krestovsky/log4ju/trunk</connection>
 	</scm>
+	
+	<distributionManagement>
+		<repository>
+			<id>mvn-repo</id>
+			<url>https://github.com/krestovsky/mvn-repo/raw/master</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+	</distributionManagement>
 
 	<modules>
 		<module>log4ju-core</module>
