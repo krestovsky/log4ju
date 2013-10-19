@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.log4ju</groupId>
@@ -12,11 +13,16 @@
 	<scm>
 		<connection>scm:svn:https://github.com/krestovsky/log4ju/trunk</connection>
 	</scm>
-	
+
+	<properties>
+		<github.global.server>github</github.global.server>
+	</properties>
+
 	<distributionManagement>
 		<repository>
-			<id>mvn-repo</id>
-			<url>https://github.com/krestovsky/mvn-repo/raw/master</url>
+			<id>internal.repo</id>
+			<name>Temporary Staging Repository</name>
+			<url>file://${project.build.directory}/mvn-repo</url>
 		</repository>
 	</distributionManagement>
 
@@ -67,6 +73,33 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>2.16</version>
+				</plugin>
+
+				<plugin>
+					<groupId>com.github.github</groupId>
+					<artifactId>site-maven-plugin</artifactId>
+					<version>0.8</version>
+					<configuration>
+						<message>Maven artifacts for ${project.version}</message>  <!-- git commit message -->
+						<noJekyll>true</noJekyll>                                  <!-- disable webpage processing -->
+						<outputDirectory>${project.build.directory}/mvn-repo</outputDirectory> <!-- matches distribution management repository url above -->
+						<branch>refs/heads/mvn-repo</branch>                       <!-- remote branch name -->
+						<includes>
+							<include>**/*</include>
+						</includes>
+						<repositoryName>log4j</repositoryName>      <!-- github repo name -->
+						<repositoryOwner>krestovsky</repositoryOwner>    <!-- github username -->
+					</configuration>
+					<executions>
+						<!-- run site-maven-plugin's 'site' target as part of the build's normal 
+							'deploy' phase -->
+						<execution>
+							<goals>
+								<goal>site</goal>
+							</goals>
+							<phase>deploy</phase>
+						</execution>
+					</executions>
 				</plugin>
 			</plugins>
 		</pluginManagement>
