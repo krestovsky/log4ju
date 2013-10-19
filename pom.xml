@@ -18,10 +18,6 @@
 		<repository>
 			<id>mvn-repo</id>
 			<url>https://github.com/krestovsky/mvn-repo/raw/master</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
 		</repository>
 	</distributionManagement>
 
