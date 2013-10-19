@@ -1,14 +1,6 @@
-<<<<<<< HEAD
 *.class
 .settings
 .classpath
 .project
 .svn
-=======
-*.class
-.settings
-.classpath
-.project
-.svn
->>>>>>> c9a143970b701fdd2a26b7a7eeafe1706ff4c854
 target
